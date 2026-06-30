@@ -1,9 +1,11 @@
+import { caller } from "@/trpc/server";
 import { Button } from "@/components/ui/button";
 
-const Page = () => {
+const Page = async () => {
+  const users = await caller.getUsers();
   return (
     <div>
-      <Button>Click me</Button>
+      {JSON.stringify(users)}
     </div>
   )
 }

@@ -40,18 +40,21 @@ $ yarn prisma migrate deploy
 
 ### Frontend
 
-* Next.js 15 (App Router)
-* React 19
-* TypeScript
-* Tailwind CSS v4
-* shadcn/ui
-* React Flow
+* Next.js 15 (App Router) - https://nextjs.org/docs/app/getting-started/installation
+* React 19 - https://reactjs.org/docs/getting-started.html
+* TypeScript - https://www.typescriptlang.org/docs/
+* Tailwind CSS v4 - https://tailwindcss.com/docs/installation
+* shadcn/ui - https://ui.shadcn.com/docs/installation/next
+* React Flow - https://reactflow.dev/docs/
+* tRPC - https://trpc.io/docs/client/nextjs/app-router-setup
+* zod - https://zod.dev/
+* tanstack/react-query - https://tanstack.com/query/v4/docs/overview
 
 ### Backend
 
 * Next.js Route Handlers
-* Prisma ORM
-* PostgreSQL (Neon)
+* Prisma ORM - https://www.prisma.io/docs/guides/frameworks/nextjs
+* PostgreSQL (Neon) - https://neon.com/
 
 ### Authentication
 
@@ -74,7 +77,7 @@ $ yarn prisma migrate deploy
 
 * ESLint
 * Prettier
-* CodeRabbit
+* CodeRabbit - https://www.coderabbit.ai/
 * Sentry
 * GitHub Actions (optional)
 
