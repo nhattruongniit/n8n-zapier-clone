@@ -1,4 +1,6 @@
-import { initTRPC } from '@trpc/server';
+import { initTRPC, TRPCError } from '@trpc/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
  
 /**
  * This context creator accepts `headers` so it can be reused in both
@@ -26,4 +28,21 @@ const t = initTRPC
 // Base router and procedure helpers
 export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
-export const baseProcedure = t.procedure;
+export const baseProcedure = t.procedure; // use for queries and mutations that don't require authentication
+
+// Use this procedure for queries and mutations that require authentication
+export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
+  const session = await auth.api.getSession({
+    headers: await headers()
+  });
+
+  if (!session) {
+    throw new TRPCError({ 
+      code: 'UNAUTHORIZED',
+      message: 'Unauthoried'
+    });
+  }
+  return next({
+    ctx: { ...ctx, auth: session }
+  });
+})
