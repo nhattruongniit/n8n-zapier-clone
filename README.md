@@ -77,6 +77,8 @@ npx shadcn@latest add <component-name>
 | tRPC | https://trpc.io/docs/client/nextjs/app-router-setup |
 | Zod | https://zod.dev/ |
 | TanStack Query | https://tanstack.com/query/v4/docs/overview |
+| Theme tweakcn | https://tweakcn.com/ |
+| Logo | https://logoipsum.com/
 
 ### Backend
 

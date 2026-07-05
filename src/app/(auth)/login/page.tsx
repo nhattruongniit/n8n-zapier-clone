@@ -1,13 +1,13 @@
 import { LoginForm } from "@/features/auth/components/login-form";
-import { requireUnAuth } from "@/lib/auth-utils";
+import { requireUnAuth } from "@/lib/auth-utils"
+;
+import Layout from "../layout";
 
 const Page = async () => {
   await requireUnAuth();
   
   return (
-    <div>
-      <LoginForm />
-    </div>
+    <LoginForm />
   )
 }
 
