@@ -1,28 +1,21 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, Form, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Field,
-  FieldDescription,
   FieldError,
-  FieldGroup,
   FieldLabel,
-  FieldLegend,
-  FieldSeparator,
-  FieldSet,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
-import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   email: z.email({ message: "Invalid email address" }),
@@ -87,6 +80,7 @@ export function RegisterForm() {
                   type="button"
                   disabled={isPending}
                 >
+                  <Image src="/logo/github.svg" alt="GitHub logo" width={20} height={20} />
                   Continue with GitHub
                 </Button>
                 <Button 
@@ -95,6 +89,7 @@ export function RegisterForm() {
                   type="button"
                   disabled={isPending}
                 >
+                  <Image src="/logo/google.svg" alt="Google logo" width={20} height={20} />
                   Continue with Google
                 </Button>
               </div>

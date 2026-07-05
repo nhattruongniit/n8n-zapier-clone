@@ -2,6 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -68,6 +69,7 @@ export function LoginForm() {
                   type="button"
                   disabled={isPending}
                 >
+                  <Image src="/logo/github.svg" alt="GitHub logo" width={20} height={20} />
                   Continue with GitHub
                 </Button>
                 <Button 
@@ -76,6 +78,7 @@ export function LoginForm() {
                   type="button"
                   disabled={isPending}
                 >
+                  <Image src="/logo/google.svg" alt="Google logo" width={20} height={20} />
                   Continue with Google
                 </Button>
               </div>
