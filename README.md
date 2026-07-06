@@ -8,11 +8,12 @@ A modern **n8n-inspired workflow automation platform** built with **Next.js**, *
 # Install dependencies
 npm install
 
-# Start the development server at localhost:3000
+# Start the development server at localhost:3000 & run background job worker
 npm run dev
+npx inngest-cli@latest dev
 
-# generate better-auth postgres adapter
-npx auth@latest generate
+# Start dev all
+npm run dev:all
 ```
 
 ### prisma commands reference:
@@ -45,6 +46,12 @@ npx shadcn@latest add --all
 npx shadcn@latest add <component-name>
 ```
 
+### better-auth commands reference:
+```bash
+# generate better-auth postgres adapter
+npx auth@latest generate
+```
+
 
 ## ✨ Features
 
@@ -58,7 +65,6 @@ npx shadcn@latest add <component-name>
 - 📱 **Responsive Design** — Works on desktop and mobile
 - 🛡️ **Error Monitoring** — Real-time error tracking with Sentry
 - 🤖 **AI Code Review** — Automated PR reviews with CodeRabbit
-
 
 ---
 
@@ -79,6 +85,13 @@ npx shadcn@latest add <component-name>
 | TanStack Query | https://tanstack.com/query/v4/docs/overview |
 | Theme tweakcn | https://tweakcn.com/ |
 | Logo | https://logoipsum.com/
+
+### Background job, workflow execution, and event-driven application
+
+| Library | Docs |
+|---|---|
+| Inngest | https://inngest.com/docs/ |
+| mprocs | https://github.com/pvolok/dekit
 
 ### Backend
 
