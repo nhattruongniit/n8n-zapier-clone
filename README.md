@@ -110,10 +110,10 @@ npx auth@latest generate
 
 - **Stripe** — [stripe.com/docs](https://stripe.com/docs)
 
-### AI Providers
+### AI Providers Gemini
 
-- **OpenAI** — [platform.openai.com/docs](https://platform.openai.com/docs)
-- **Google Gemini** — [ai.google.dev/docs](https://ai.google.dev/docs)
+- **Get key** - https://aistudio.google.com/
+- **gemini-3.1-pro-preview** — [https://ai-sdk.dev/providers/ai-sdk-providers/google](https://ai-sdk.dev/providers/ai-sdk-providers/google)
 
 ### DevOps & Tooling
 

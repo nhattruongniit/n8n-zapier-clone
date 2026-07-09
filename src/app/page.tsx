@@ -23,6 +23,11 @@ const Page = () => {
       toast.success("Workflow creation triggered");
     }
   }));
+  const testAi = useMutation(trpc.testAi.mutationOptions({
+    onSuccess: () => {
+      toast.success("AI creation triggered");
+    }
+  })); 
   
   return (
     <div className="min-h-screen min-w-screen flex flex-col items-center justify-center">
@@ -30,6 +35,13 @@ const Page = () => {
       <div>
         {JSON.stringify(data, null, 2)}
       </div>
+      <br /><br />
+      <Button 
+        disabled={testAi.isPending}
+        onClick={() => testAi.mutate()}
+      >
+        Test AI
+      </Button>
       <br /><br />
       <Button 
         disabled={create.isPending}
