@@ -1,20 +1,16 @@
-import { inngest } from '@/inngest/client';
-import { 
-  baseProcedure, 
-  createTRPCRouter, 
-  protectedProcedure 
-} from '../init';
-import prisma from '@/lib/db';
- 
+// import { TRPCError } from "@trpc/server";
+import { inngest } from "@/inngest/client";
+import prisma from "@/lib/db";
+import { baseProcedure, createTRPCRouter, protectedProcedure } from "../init";
+
 export const appRouter = createTRPCRouter({
   // get list of users  with authentication
-  getUsers: protectedProcedure
-    .query(({ ctx }) => {
-      return prisma.user.findMany({
-        where: {
-          id: ctx.auth.user.id
-        }
-      });
+  getUsers: protectedProcedure.query(({ ctx }) => {
+    return prisma.user.findMany({
+      where: {
+        id: ctx.auth.user.id,
+      },
+    });
   }),
   // getUsers: baseProcedure
   //   .query(() => {
@@ -27,20 +23,24 @@ export const appRouter = createTRPCRouter({
     await inngest.send({
       name: "app/task.created",
       data: {
-        id: "task_" + Math.floor(Math.random() * 1000).toString(),
-      }
-    })
+        id: `task_${Math.floor(Math.random() * 1000).toString()}`,
+      },
+    });
     return { success: true, message: "Workflow creation triggered" };
   }),
   testAi: baseProcedure.mutation(async () => {
+    // throw new TRPCError({
+    //   code: "BAD_REQUEST",
+    //   message: "This is a test error for demonstration purposes.",
+    // });
     await inngest.send({
       name: "app/task.ai",
       data: {
-        id: "task_" + Math.floor(Math.random() * 1000).toString(),
-      } 
-    })
+        id: `task_${Math.floor(Math.random() * 1000).toString()}`,
+      },
+    });
     return { success: true, message: "AI test triggered" };
-  })
+  }),
 });
 
 // export type definition of API

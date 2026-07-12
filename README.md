@@ -85,6 +85,7 @@ npx auth@latest generate
 | TanStack Query | https://tanstack.com/query/v4/docs/overview |
 | Theme tweakcn | https://tweakcn.com/ |
 | Logo | https://logoipsum.com/
+| Sentry | https://docs.sentry.io/platforms/javascript/guides/nextjs/ |
 
 ### Background job, workflow execution, and event-driven application
 
