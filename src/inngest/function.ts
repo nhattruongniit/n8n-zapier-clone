@@ -45,6 +45,12 @@ export const processAi = inngest.createFunction(
       model: google('gemini-2.5-flash'),
       system: "You are a helpful assistant that generates text based on the input provided.",
       prompt: "What is 2 + 2?",
+      experimental_telemetry: {
+        isEnabled: true,
+        functionId: "joke_agent",
+        recordInputs: true,
+        recordOutputs: true,
+      },
     });
 
     return steps;
