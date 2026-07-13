@@ -95,7 +95,7 @@ export function LoginForm() {
                         id="email"
                         type="email"
                         aria-invalid={fieldState.invalid}
-                        placeholder="Enter your email"
+                        placeholder="admin@gmail.com"
                       />
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
@@ -115,7 +115,7 @@ export function LoginForm() {
                         id="password"
                         type="password"
                         aria-invalid={fieldState.invalid}
-                        placeholder="********"
+                        placeholder="123456789"
                       />
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
