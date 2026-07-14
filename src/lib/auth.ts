@@ -1,12 +1,34 @@
+import { polar, checkout, portal } from "@polar-sh/better-auth"; 
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "./db";
+import { polarClient } from "./polar";
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql", // or "mysql", "postgresql", ...etc
   }),
   emailAndPassword: {
     enabled: true,
-    autoSigin: true,
-  }
+    autoSignIn: true,
+  },
+  plugins: [
+    polar({ 
+      client: polarClient, 
+      createCustomerOnSignUp: true, 
+      use: [ 
+        checkout({ 
+          products: [ 
+            { 
+              productId: process.env.POLAR_PRODUCT_ID as string, // ID of Product from Polar Dashboard
+              slug: "pro" // Custom slug for easy reference in Checkout URL, e.g. /checkout/pro
+            } 
+          ], 
+          successUrl: "/success?checkout_id={CHECKOUT_ID}",
+          authenticatedUsersOnly: true
+        }), 
+        portal(), 
+      ], 
+    }) 
+  ]
 });

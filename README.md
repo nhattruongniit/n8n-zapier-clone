@@ -109,7 +109,8 @@ npx auth@latest generate
 
 ### Payments
 
-- **Stripe** — [stripe.com/docs](https://stripe.com/docs)
+- **Polar** — [polar.sh](https://polar.sh/)
+- **Integrate better auth** — [Polar with better auth](https://polar.sh/docs/integrate/sdk/adapters/better-auth#betterauth)
 
 ### AI Providers Gemini
 
@@ -146,26 +147,10 @@ pnpm install
 
 ### 3. Configure environment variables
 
-Create a `.env` file in the project root and fill in the required values:
+Create a `.env` file in the project root and clone the `.env.template` file:
 
-```env
-# Database
-DATABASE_URL=
-
-# Authentication
-BETTER_AUTH_SECRET=
-BETTER_AUTH_URL=
-
-# Stripe
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
-
-# AI
-OPENAI_API_KEY=
-GEMINI_API_KEY=
-
-# Sentry
-SENTRY_DSN=
+```bash
+cp .env.template .env
 ```
 
 ---
