@@ -1,6 +1,7 @@
 import { initTRPC, TRPCError } from '@trpc/server';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
+import { polarClient } from '@/lib/polar';
  
 /**
  * This context creator accepts `headers` so it can be reused in both
@@ -46,3 +47,19 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
     ctx: { ...ctx, auth: session }
   });
 })
+
+export const premiumProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  const customer = await polarClient.customers.getStateExternal({
+    externalId: ctx.auth.user.id
+  })
+
+  if (!customer.activeSubscriptions || customer.activeSubscriptions.length === 0) {
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'You need an active subscription to access this resource'
+    });
+  }
+  
+  return next({ ctx: { ...ctx, customer }});
+});
+  

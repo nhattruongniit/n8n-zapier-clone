@@ -1,7 +1,7 @@
 // import { TRPCError } from "@trpc/server";
 import { inngest } from "@/inngest/client";
 import prisma from "@/lib/db";
-import { baseProcedure, createTRPCRouter, protectedProcedure } from "../init";
+import { baseProcedure, createTRPCRouter, protectedProcedure, premiumProcedure } from "../init";
 
 export const appRouter = createTRPCRouter({
   // get list of users  with authentication
@@ -29,6 +29,19 @@ export const appRouter = createTRPCRouter({
     return { success: true, message: "Workflow creation triggered" };
   }),
   testAi: baseProcedure.mutation(async () => {
+    // throw new TRPCError({
+    //   code: "BAD_REQUEST",
+    //   message: "This is a test error for demonstration purposes.",
+    // });
+    await inngest.send({
+      name: "app/task.ai",
+      data: {
+        id: `task_${Math.floor(Math.random() * 1000).toString()}`,
+      },
+    });
+    return { success: true, message: "AI test triggered" };
+  }),
+  testAiPremium: premiumProcedure.mutation(async () => {
     // throw new TRPCError({
     //   code: "BAD_REQUEST",
     //   message: "This is a test error for demonstration purposes.",
