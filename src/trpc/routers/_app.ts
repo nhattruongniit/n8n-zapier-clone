@@ -2,6 +2,7 @@
 import { inngest } from "@/inngest/client";
 import prisma from "@/lib/db";
 import { baseProcedure, createTRPCRouter, protectedProcedure, premiumProcedure } from "../init";
+import { workflowsRouter } from "@/features/workflows/server/routers";
 
 export const appRouter = createTRPCRouter({
   // get list of users  with authentication
@@ -54,6 +55,7 @@ export const appRouter = createTRPCRouter({
     });
     return { success: true, message: "AI test triggered" };
   }),
+  workflows: workflowsRouter,
 });
 
 // export type definition of API
