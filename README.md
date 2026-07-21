@@ -111,6 +111,7 @@ npx auth@latest generate
 
 - **Polar** — [polar.sh](https://polar.sh/)
 - **Integrate better auth** — [Polar with better auth](https://polar.sh/docs/integrate/sdk/adapters/better-auth#betterauth)
+- Use: **4242 4242 4242 4242** to test Stripe payments in dev mode
 
 ### AI Providers Gemini
 
