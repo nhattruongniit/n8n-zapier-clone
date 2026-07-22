@@ -3,6 +3,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "./db";
 import { polarClient } from "./polar";
+import * as CONSTANTS from "@/config/constants";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -21,7 +22,7 @@ export const auth = betterAuth({
           products: [ 
             { 
               productId: process.env.POLAR_PRODUCT_ID as string, // ID of Product from Polar Dashboard
-              slug: "pro" // Custom slug for easy reference in Checkout URL, e.g. /checkout/pro
+              slug: CONSTANTS.POLAR_SLUG // Custom slug for easy reference in Checkout URL, e.g. /checkout/pro
             } 
           ], 
           successUrl: "/success?checkout_id={CHECKOUT_ID}",

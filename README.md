@@ -86,6 +86,7 @@ npx auth@latest generate
 | Theme tweakcn | https://tweakcn.com/ |
 | Logo | https://logoipsum.com/
 | Sentry | https://docs.sentry.io/platforms/javascript/guides/nextjs/ |
+| Search Params state | https://nuqs.dev/
 
 ### Background job, workflow execution, and event-driven application
 
