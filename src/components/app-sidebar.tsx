@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import { useHasActiveSubscription } from "@/features/subscriptions/hooks/use-subscription";
+import * as CONSTANTS from "@/config/constants";
 
 const menuItems = [
   {
@@ -92,7 +93,7 @@ const AppSidebar = () => {
                 className="gap-x-4 h-10 px-4"
                 onClick={() => {
                   authClient.checkout({
-                    slug: "pro",
+                    slug: CONSTANTS.POLAR_SLUG,
                   })
                 }}
               >
