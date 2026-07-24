@@ -2,7 +2,7 @@ import { initTRPC, TRPCError } from '@trpc/server';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { polarClient } from '@/lib/polar';
- 
+import superjson from 'superjson';
 /**
  * This context creator accepts `headers` so it can be reused in both
  * the RSC server caller (where you pass `next/headers`) and the
@@ -23,9 +23,8 @@ const t = initTRPC
     /**
      * @see https://trpc.io/docs/server/data-transformers
      */
-    // transformer: superjson,
+    transformer: superjson,
   });
- 
 // Base router and procedure helpers
 export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
