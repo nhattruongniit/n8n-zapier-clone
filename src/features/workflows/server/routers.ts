@@ -2,6 +2,7 @@ import prisma from "@/lib/db";
 import { generateSlug } from "random-word-slugs";
 import { createTRPCRouter, protectedProcedure, premiumProcedure } from "@/trpc/init";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { PAGINATION } from "@/config/constants";
 
 export const workflowsRouter = createTRPCRouter({
@@ -46,12 +47,12 @@ export const workflowsRouter = createTRPCRouter({
       id: z.string()
     }))
     .query(({ ctx, input }) => {
-      return prisma.workflow.findUnique({
+      return prisma.workflow.findUniqueOrThrow({
         where: {
           id: input.id,
           userId: ctx.auth.user.id
         }
-      })
+      });
     }),
   getMany: protectedProcedure
     .input(z.object({
