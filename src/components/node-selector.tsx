@@ -80,7 +80,14 @@ export const NodeSelector = ({ open, onOpenChange, children }: NodeSelectorProps
       }
 
       if (hasInitialTrigger) {
-        return [newNode];
+        const initial = nodes.find((node) => node.type === NodeType.INITIAL);
+        const replacement = {
+          id: initial?.id || newNode.id,
+          data: newNode.data,
+          position: initial?.position || newNode.position,
+          type: newNode.type,
+        }
+        return nodes.map((node) => node.id === initial?.id ? replacement : node);
       }
       return [...nodes, newNode];
     });
