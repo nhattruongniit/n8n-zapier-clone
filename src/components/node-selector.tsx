@@ -18,7 +18,6 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { NodeType } from '@/generated/prisma';
 import { toast } from 'sonner';
-import { Button } from './ui/button';
 
 export type NodeTypeOption = {
   type: NodeType;
