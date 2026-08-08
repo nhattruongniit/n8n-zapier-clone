@@ -144,7 +144,7 @@ export const WorkflowsItem = ({
 }) => {
   const removeWorkflow = useRemoveWorkflow();
 
-  const handleRemove = () => {
+  function handleRemove() {
     removeWorkflow.mutate({ id: data.id });
   }
 

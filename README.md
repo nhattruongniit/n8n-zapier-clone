@@ -77,6 +77,7 @@ npx auth@latest generate
 | Next.js 15 (App Router) | https://nextjs.org/docs/app/getting-started/installation |
 | React 19 | https://reactjs.org/docs/getting-started.html |
 | TypeScript | https://www.typescriptlang.org/docs/ |
+| Jotai | https://jotai.org/docs/introduction |
 | Tailwind CSS v4 | https://tailwindcss.com/docs/installation |
 | shadcn/ui | https://ui.shadcn.com/docs/installation/next |
 | React Flow | https://reactflow.dev/docs/ |

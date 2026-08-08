@@ -307,6 +307,10 @@ export const EntityItem = ({
     }
   }
 
+  function handleUpdateWorkflowName() {
+
+  }
+
   return (
     <Card
       onClick={() => { if (!isRemoving) router.push(href); }}
