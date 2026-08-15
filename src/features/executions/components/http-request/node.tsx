@@ -7,31 +7,28 @@ import { BaseExecutionNode } from "@/features/executions/components/base-executi
 import { HttpRequestDialog, HttpRequestFormValues } from "./dialog";
 
 type HttpRequestNodeData = {
-  endPoint?: string;
+  endpoint?: string;
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: string;
 }
 
 type HttpRequestNodeType = Node<HttpRequestNodeData>;
 
-export const HttpRequestNode = React.memo((props: NodeProps<HttpRequestNodeType>) => {
- const [dialogOpen, setDialogOpen] = React.useState(false);
- const { setNodes } = useReactFlow();
+export const HttpRequestNode = (props: NodeProps<HttpRequestNodeType>) => {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const { setNodes } = useReactFlow();
 
   const nodeStatus = "initial";
   const nodeData = props.data;
-  const description = React.useMemo(
-    () => nodeData?.endPoint
-      ? `${nodeData.method || "GET"} : ${nodeData.endPoint}`
-      : "Not configured",
-    [nodeData?.endPoint, nodeData?.method]
-  );
+  const description = nodeData?.endpoint
+      ? `${nodeData.method || "GET"} : ${nodeData.endpoint}`
+      : "Not configured";
 
-  const handleOpenSettings = React.useCallback(() => {
+  function handleOpenSettings() {
     setDialogOpen(true);
-  }, []);
+  }
 
-  const handleSubmit = React.useCallback((values: HttpRequestFormValues) => {
+  function handleSubmit(values: HttpRequestFormValues) {
     setNodes(nodes => nodes.map(node => {
       if (node.id === props.id) {
         return {
@@ -43,8 +40,8 @@ export const HttpRequestNode = React.memo((props: NodeProps<HttpRequestNodeType>
         }
       }
       return node;
-    }))
-  }, [props.id, setNodes]);
+    }));
+  };
 
   return (
     <>
@@ -66,6 +63,4 @@ export const HttpRequestNode = React.memo((props: NodeProps<HttpRequestNodeType>
       />
     </>
   )
-});
-
-HttpRequestNode.displayName = "HttpRequestNode";
+};
