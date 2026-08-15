@@ -88,6 +88,7 @@ npx auth@latest generate
 | Logo | https://logoipsum.com/
 | Sentry | https://docs.sentry.io/platforms/javascript/guides/nextjs/ |
 | Search Params state | https://nuqs.dev/
+| Sort directed graph | https://www.npmjs.com/package/toposort
 
 ### Background job, workflow execution, and event-driven application
 

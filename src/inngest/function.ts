@@ -2,34 +2,16 @@
 import prisma from "@/lib/db";
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText } from 'ai';
+import { NonRetriableError } from "inngest";
+import { NodeType } from "@/generated/prisma";
 
 import { inngest } from "./client";
+import { topologicalSort } from "@/utils/toposort-node";
+import { getExecutor } from "@/features/executions/lib/executor-registry";
 
 const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || "",
 });
-
-export const processTask = inngest.createFunction(
-  { 
-    id: "process-task", 
-    triggers: { 
-      event: "app/task.created" 
-    }
-  },
-  async ({ step }) => {
-    await step.sleep("fetching", "3s");
-    await step.sleep("transcript", "3s");
-    await step.sleep("sending-to-ai", "3s");
-
-    await step.run('create-workflow', () => {
-      return prisma.workflow.create({
-        data: {
-          name: 'workflow-from-inngest-' + Math.floor(Math.random() * 1000).toString()
-        }
-      })
-    })
-  }
-);
 
 export const processAi = inngest.createFunction(
   { 
@@ -54,5 +36,48 @@ export const processAi = inngest.createFunction(
     });
 
     return steps;
+  }
+);
+
+export const executeWorkflow = inngest.createFunction(
+  { 
+    id: "execute-workflow" ,
+    triggers: {
+      event: "workflows/execute.workflow"
+    }
+  },
+  async ({ event, step }) => {
+    const workflowId = event.data.workflowId;
+
+    if(!workflowId) {
+      throw new NonRetriableError("Workflow ID is required to execute the workflow.");
+    }
+
+    const sortedNodes = await step.run("prepare-workflow", async () => {
+      const workflow = await prisma.workflow.findUniqueOrThrow({
+        where: { id: workflowId },
+        include: {
+          nodes: true,
+          connections: true,
+        }
+      });
+     return topologicalSort(workflow.nodes, workflow.connections);
+    });
+
+    let context = event.data.initialData || {};
+    for (const node of sortedNodes) {
+      const executor = getExecutor(node.type as NodeType);
+      context = await executor({
+        data: node.data as Record<string, unknown>,
+        nodeId: node.id,
+        context,
+        step,
+      });
+    }
+
+    return { 
+      workflowId,
+      result: context 
+    };
   }
 );

@@ -16,7 +16,6 @@ import {
   Field,
   FieldDescription,
   FieldError,
-  FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input";
@@ -34,40 +33,38 @@ const formSchema = z.object({
   endpoint: z.url({ message: 'Please enter a valid url' }),
   method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
   body: z.string().optional()
-})
+});
+
+export type HttpRequestFormValues = z.infer<typeof formSchema>; 
 
 interface ManualTriggerDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (value: z.infer<typeof formSchema>) => void;
-  defaultEndpoint?: string,
-  defaultMethod?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-  defaultBody?: string;
+  defaultValues?: Partial<HttpRequestFormValues>;
 }
 
 export const HttpRequestDialog = React.memo(({
   isOpen,
   onOpenChange,
   onSubmit,
-  defaultEndpoint = '',
-  defaultMethod = "GET",
-  defaultBody = '',
+  defaultValues = {},
 }: ManualTriggerDialogProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      endpoint: defaultEndpoint,
-      method: defaultMethod,
-      body: defaultBody,
+      endpoint: defaultValues.endpoint ?? '',
+      method: defaultValues.method ?? "GET",
+      body: defaultValues.body ?? '',
     },
   });
 
   React.useEffect(() => {
     if (isOpen) {
       form.reset({
-        endpoint: defaultEndpoint,
-        method: defaultMethod,
-        body: defaultBody,
+        endpoint: defaultValues.endpoint ?? '',
+        method: defaultValues.method ?? "GET",
+        body: defaultValues.body ?? '',
       })
     }
   }, [isOpen])
