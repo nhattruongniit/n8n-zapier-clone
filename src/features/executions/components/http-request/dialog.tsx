@@ -30,6 +30,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
 const formSchema = z.object({
+  variableName: z
+    .string()
+    .min(1, { message: 'Variable name is required' })
+    .regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, { 
+      message: 'Variable name must start with a letter or underscore and can only contain letters, numbers, and underscores' 
+    }),
   endpoint: z.url({ message: 'Please enter a valid url' }),
   method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
   body: z.string().optional()
@@ -53,6 +59,7 @@ export const HttpRequestDialog = React.memo(({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      variableName: defaultValues.variableName ?? '',
       endpoint: defaultValues.endpoint ?? '',
       method: defaultValues.method ?? "GET",
       body: defaultValues.body ?? '',
@@ -62,6 +69,7 @@ export const HttpRequestDialog = React.memo(({
   React.useEffect(() => {
     if (isOpen) {
       form.reset({
+        variableName: defaultValues.variableName ?? '',
         endpoint: defaultValues.endpoint ?? '',
         method: defaultValues.method ?? "GET",
         body: defaultValues.body ?? '',
@@ -69,7 +77,7 @@ export const HttpRequestDialog = React.memo(({
     }
   }, [isOpen])
 
-
+  const watchVariableName = form.watch("variableName") || 'myApiCall';
   const watchMethod = form.watch("method");
   const showBodyField = ["POST", "PUT", "PATCH"].includes(watchMethod);
 
@@ -88,7 +96,26 @@ export const HttpRequestDialog = React.memo(({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8 mt-4">
-            <Controller
+          <Controller
+            name="variableName"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Variable Name</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  aria-invalid={fieldState.invalid}
+                  placeholder="myApiCall"
+                />
+                <FieldDescription>
+                  Use this name to reference the result in other nodes: {" "} {`{{${watchVariableName}.httpResponse.data}}`}
+                </FieldDescription>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
+          />
+          <Controller
             name="method"
             control={form.control}
             render={({ field, fieldState }) => (
