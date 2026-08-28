@@ -3,7 +3,6 @@ import prisma from "@/lib/db";
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText } from 'ai';
 import { NonRetriableError } from "inngest";
-import { NodeType } from "@/generated/prisma";
 
 import { inngest } from "./client";
 import { topologicalSort } from "@/utils/toposort-node";
@@ -20,7 +19,7 @@ export const processAi = inngest.createFunction(
       event: "app/task.ai" 
     }
   },
-  async ({ event, step }) => {
+  async ({ step }) => {
     await step.sleep('pretend', '5s');
     
     const { steps } = await step.ai.wrap("gemini-generate-text", generateText, {
@@ -43,8 +42,9 @@ export const executeWorkflow = inngest.createFunction(
   { 
     id: "execute-workflow" ,
     triggers: {
-      event: "workflows/execute.workflow"
-    }
+      event: "workflows/execute.workflow",
+    },
+    retries: 0
   },
   async ({ event, step }) => {
     const workflowId = event.data.workflowId;
@@ -71,7 +71,7 @@ export const executeWorkflow = inngest.createFunction(
         data: node.data as Record<string, unknown>,
         nodeId: node.id,
         context,
-        step,
+        step
       });
     }
 
