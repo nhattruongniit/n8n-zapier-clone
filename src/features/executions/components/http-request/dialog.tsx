@@ -181,7 +181,12 @@ export const HttpRequestDialog = React.memo(({
                     className="min-h-[120px] font-mono text-sm"
                     id={field.name}
                     aria-invalid={fieldState.invalid}
-                    placeholder='{"key": "value"}'
+                    // how to space the placeholder text nicely?
+                    placeholder={`{
+  "userId": "{{httpResponse.data.id}}",
+  "name": "{{httpResponse.data.name}}",
+  "items": "{{httpResponse.data.items}}"
+}`}
                   />
                   <FieldDescription>
                     JSON with template variables. Use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects.

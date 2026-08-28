@@ -1,13 +1,19 @@
+import Handlebars from "handlebars";
 import { MethodType } from "@/config/constants";
 import { NonRetriableError } from "inngest";
 import ky, { type Options as KyOptions } from "ky";
 
 import type { NodeExecutor } from "@/features/executions/types";
 
+Handlebars.registerHelper('json', context => {
+  const stringified = JSON.stringify(context, null, 2);
+  return new Handlebars.SafeString(stringified);
+});
+
 type httpRequestData = {
-  variableName?: string;
-  endpoint?: string;
-  method?: MethodType;
+  variableName: string;
+  endpoint: string;
+  method: MethodType;
   body?: string;
 }
 
@@ -24,13 +30,19 @@ export const httpRequestExecutor: NodeExecutor<httpRequestData> = async ({
     throw new NonRetriableError("HTTP Request node: No endpoint configured");
   }
 
+  if (!data.method) {
+    throw new NonRetriableError("HTTP Request node: No method configured");
+  }
+
   const result = await step.run("http-request", async () => {
-    const endpoint = data.endpoint!;
-    const method = data.method || 'GET';
+    const endpoint = Handlebars.compile(data.endpoint)(context);
+    const method = data.method;
     const options: KyOptions = { method };
 
     if (['POST', 'PUT', 'PATCH'].includes(method)) {
-      options.body = data.body;
+      const resolved = Handlebars.compile(data.body || "{}")(context);
+      JSON.parse(resolved); // validate JSON
+      options.body = resolved;
       options.headers = {
         "Content-Type": "application/json"
       }
@@ -48,22 +60,12 @@ export const httpRequestExecutor: NodeExecutor<httpRequestData> = async ({
       }
     }
 
-    if (data.variableName) {
-      return {
-        ...context,
-      [data.variableName]: payload
-      }
-    }
-
-    // fallback
+    const compliedVariableName = Handlebars.compile(data.variableName)(context);
     return {
       ...context,
-      ...payload,
+    [compliedVariableName]: payload
     }
-    
   })
-
-  // publish "success" state
 
   return result;
 }
