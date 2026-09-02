@@ -12,8 +12,8 @@ npm install
 npm run dev
 npx inngest-cli@latest dev
 
-# Start dev all
-npm run dev:all
+# run ngrok
+ngrok http 3000
 ```
 
 ### prisma commands reference:
@@ -30,11 +30,14 @@ npx prisma migrate dev --create-only --name <migration-name>
 # Apply pending migrations to the database
 npx prisma migrate deploy
 
+# Run database migrations
+npx prisma migrate dev
+
+# or run migration specific to a name
+npx prisma migrate dev --name <migration-name>
+
 # Reset the database and apply all migrations (use with caution)
 npx prisma migrate reset
-
-### Run database migrations
-npx prisma migrate dev
 ```
 
 ### shadcn/ui commands reference:
@@ -89,6 +92,7 @@ npx auth@latest generate
 | Sentry | https://docs.sentry.io/platforms/javascript/guides/nextjs/ |
 | Search Params state | https://nuqs.dev/
 | Sort directed graph | https://www.npmjs.com/package/toposort
+| ngrok | https://dashboard.ngrok.com/get-started/gateway
 
 ### Background job, workflow execution, and event-driven application
 
