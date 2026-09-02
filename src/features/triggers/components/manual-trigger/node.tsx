@@ -14,7 +14,7 @@ import { ManualTriggerDialog } from "./dialog";
 export const ManualTriggerNode = React.memo((props: NodeProps) => {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   
-   const nodeStatus = useNodeStatus({
+  const nodeStatus = useNodeStatus({
     nodeId: props.id,
     channel: manualTriggerChannel({ contentId: props.id }).name,
     topic: "status",

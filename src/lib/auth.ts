@@ -9,12 +9,15 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql", // or "mysql", "postgresql", ...etc
   }),
+  trustedOrigins: process.env.NEXT_PUBLIC_BASE_URL
+    ? [process.env.NEXT_PUBLIC_BASE_URL]
+    : undefined,
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
   },
   plugins: [
-    polar({ 
+    polar({   
       client: polarClient, 
       createCustomerOnSignUp: true, 
       use: [ 
