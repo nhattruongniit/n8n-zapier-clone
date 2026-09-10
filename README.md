@@ -8,8 +8,10 @@ A modern **n8n-inspired workflow automation platform** built with **Next.js**, *
 # Install dependencies
 npm install
 
-# Start the development server at localhost:3000 & run background job worker
+# Start the development server at localhost:3000
 npm run dev
+
+# run background job worker
 npx inngest-cli@latest dev
 
 # run ngrok
@@ -55,6 +57,20 @@ npx shadcn@latest add <component-name>
 npx auth@latest generate
 ```
 
+### test stripe webhooks
+```bash
+# docs: https://stripe.com/docs/webhooks
+
+# login
+stripe login
+
+# forward webhooks from Stripe to your local development server
+stripe listen --forward-to "localhost:3000/api/webhooks/stripe?workflowId={workflowId}"
+
+# test the webhook
+stripe trigger payment_intent.succeeded
+```
+
 
 ## ✨ Features
 
@@ -93,7 +109,7 @@ npx auth@latest generate
 | Search Params state | https://nuqs.dev/
 | Sort directed graph | https://www.npmjs.com/package/toposort
 | ngrok | https://dashboard.ngrok.com/get-started/gateway
-
+| Stripe | https://stripe.com/docs/webhooks |
 ### Background job, workflow execution, and event-driven application
 
 | Library | Docs |

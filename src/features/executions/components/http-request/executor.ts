@@ -16,9 +16,9 @@ Handlebars.registerHelper('json', context => {
 });
 
 type httpRequestData = {
-  variableName: string;
-  endpoint: string;
-  method: MethodType;
+  variableName?: string;
+  endpoint?: string;
+  method?: MethodType;
   body?: string;
 }
 
@@ -33,24 +33,24 @@ export const httpRequestExecutor: NodeExecutor<httpRequestData> = async ({
     status: "loading",
   });
 
-  if (!data.variableName && typeof data.variableName === 'string') {
-    await step.realtime.publish("publish:http-request", ch.status, { status: "error" });
-    throw new NonRetriableError("HTTP Request node: No variable name configured");
-  }
-
-  if (!data.endpoint) {
-    await step.realtime.publish("publish:http-request", ch.status, { status: "error" });
-    throw new NonRetriableError("HTTP Request node: No endpoint configured");
-  }
-
-  if (!data.method) {
-    await step.realtime.publish("publish:http-request", ch.status, { status: "error" });
-    throw new NonRetriableError("HTTP Request node: No method configured");
-  }
-
   let result: Record<string, unknown>;
   try {
     result = await step.run("http-request", async () => {
+      if (!data.variableName && typeof data.variableName === 'string') {
+        await step.realtime.publish("publish:http-request", ch.status, { status: "error" });
+        throw new NonRetriableError("HTTP Request node: No variable name configured");
+      }
+
+      if (!data.endpoint) {
+        await step.realtime.publish("publish:http-request", ch.status, { status: "error" });
+        throw new NonRetriableError("HTTP Request node: No endpoint configured");
+      }
+
+      if (!data.method) {
+        await step.realtime.publish("publish:http-request", ch.status, { status: "error" });
+        throw new NonRetriableError("HTTP Request node: No method configured");
+      }
+
       let endpoint: string;
       try {
         const template = Handlebars.compile(data.endpoint);
