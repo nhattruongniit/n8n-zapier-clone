@@ -16,3 +16,5 @@ export const HTTP_REQUEST_CHANNEL_NAME = "http-request";
 export const MANUAL_TRIGGER_CHANNEL_NAME = "manual-trigger";
 
 export const GOOGLE_FORM_TRIGGER_CHANNEL_NAME = "google-form-trigger";
+
+export const STRIPE_TRIGGER_CHANNEL_NAME = "stripe-trigger";
