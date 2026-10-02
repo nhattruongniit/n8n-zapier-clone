@@ -19,8 +19,7 @@ interface BaseExcutionNodeProps extends NodeProps {
   onDoubleClick?: () => void;
 }
 
-export const BaseExecutionNode = React.memo(
-({
+export const BaseExecutionNode = ({
   id,
   icon: Icon,
   name,
@@ -67,6 +66,4 @@ export const BaseExecutionNode = React.memo(
       </NodeStatusIndicator>
     </WorkflowNode>
   );
-});
-
-BaseExecutionNode.displayName = "BaseExecutionNode";
+};

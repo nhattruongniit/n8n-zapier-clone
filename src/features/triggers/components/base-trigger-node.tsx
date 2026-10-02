@@ -19,8 +19,7 @@ interface BaseTriggerNodeProps extends NodeProps {
   onDoubleClick?: () => void;
 }
 
-export const BaseTriggerNode = React.memo(
-({
+export const BaseTriggerNode = ({
   id,
   icon: Icon,
   name,
@@ -70,6 +69,6 @@ export const BaseTriggerNode = React.memo(
       </NodeStatusIndicator>
     </WorkflowNode>
   );
-});
+};
 
 BaseTriggerNode.displayName = "BaseTriggerNode";

@@ -13,7 +13,9 @@
     "dev:all": "dotenv -- mprocs"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.52",
     "@ai-sdk/google": "^4.0.8",
+    "@ai-sdk/openai": "^4.0.65",
     "@base-ui/react": "^1.6.0",
     "@hookform/resolvers": "^5.4.0",
     "@polar-sh/better-auth": "^1.8.4",

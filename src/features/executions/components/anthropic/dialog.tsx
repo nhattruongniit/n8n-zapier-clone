@@ -22,12 +22,15 @@ import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { AVAILABLE_MODELS_ANTHROPIC } from "@/config/constants";
 
 const formSchema = z.object({
   variableName: z
@@ -36,34 +39,33 @@ const formSchema = z.object({
     .regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, { 
       message: 'Variable name must start with a letter or underscore and can only contain letters, numbers, and underscores' 
     }),
-  endpoint: z.string()
-    .min(1, { message: 'Please enter a valid url' }),
-  method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
-  body: z.string().optional()
+  model: z.enum(AVAILABLE_MODELS_ANTHROPIC),
+  systemPrompt: z.string().optional(),
+  userPrompt: z.string().min(1, { message: 'User prompt is required' })
 });
 
-export type HttpRequestFormValues = z.infer<typeof formSchema>; 
+export type AnthropicFormValues = z.infer<typeof formSchema>; 
 
-interface ManualTriggerDialogProps {
+interface AnthropicDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (value: z.infer<typeof formSchema>) => void;
-  defaultValues?: Partial<HttpRequestFormValues>;
+  defaultValues?: Partial<AnthropicFormValues>;
 }
 
-export const HttpRequestDialog = React.memo(({
+export const AnthropicDialog = React.memo(({
   isOpen,
   onOpenChange,
   onSubmit,
   defaultValues = {},
-}: ManualTriggerDialogProps) => {
+}: AnthropicDialogProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       variableName: defaultValues.variableName ?? '',
-      endpoint: defaultValues.endpoint ?? '',
-      method: defaultValues.method ?? "GET",
-      body: defaultValues.body ?? '',
+      model: defaultValues.model ?? AVAILABLE_MODELS_ANTHROPIC[0],
+      systemPrompt: defaultValues.systemPrompt ?? '',
+      userPrompt: defaultValues.userPrompt ?? '',
     },
   });
 
@@ -71,16 +73,14 @@ export const HttpRequestDialog = React.memo(({
     if (isOpen) {
       form.reset({
         variableName: defaultValues.variableName ?? '',
-        endpoint: defaultValues.endpoint ?? '',
-        method: defaultValues.method ?? "GET",
-        body: defaultValues.body ?? '',
+        model: defaultValues.model ?? AVAILABLE_MODELS_ANTHROPIC[0],
+        systemPrompt: defaultValues.systemPrompt ?? '',
+        userPrompt: defaultValues.userPrompt ?? '',
       })
     }
   }, [isOpen])
 
-  const watchVariableName = form.watch("variableName") || 'myApiCall';
-  const watchMethod = form.watch("method");
-  const showBodyField = ["POST", "PUT", "PATCH"].includes(watchMethod);
+  const watchVariableName = form.watch("variableName") || 'myAnthropic';
 
   function handleSubmit(values: z.infer<typeof formSchema>) {
     onSubmit(values);
@@ -90,10 +90,10 @@ export const HttpRequestDialog = React.memo(({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
-        <DialogHeader className="flex">
-          <DialogTitle>HTTP Request</DialogTitle>
+        <DialogHeader>
+          <DialogTitle>Anthropic Configuration</DialogTitle>
           <DialogDescription>
-            Configure settings for the HTTP Request node.
+            Configure the AI model and prompts for this node.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8 mt-4">
@@ -110,40 +110,42 @@ export const HttpRequestDialog = React.memo(({
                   placeholder="myApiCall"
                 />
                 <FieldDescription>
-                  Use this name to reference the result in other nodes: {" "} {`{{${watchVariableName}.httpResponse.data}}`}
+                  Use this name to reference the result in other nodes: {" "} {`{{${watchVariableName}.text}}`}
                 </FieldDescription>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />
+
           <Controller
-            name="method"
+            name="model"
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Method</FieldLabel>
-                <Select
-                  {...field}
+                <FieldLabel htmlFor={field.name}>Model</FieldLabel>
+                <Select 
+                  {...field} 
                   name={field.name}
                   value={field.value}
                   onValueChange={field.onChange}
+                  aria-invalid={fieldState.invalid}
                 >
-                  <SelectTrigger
-                    aria-invalid={fieldState.invalid}
-                    className="w-full"
-                  >
-                    <SelectValue placeholder="Select" />
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="GET">GET</SelectItem>
-                    <SelectItem value="POST">POST</SelectItem>
-                    <SelectItem value="PUT">PUT</SelectItem>
-                    <SelectItem value="PATCH">PATCH</SelectItem>
-                    <SelectItem value="DELETE">DELETE</SelectItem>
+                    <SelectGroup>
+                      <SelectLabel>Model</SelectLabel>
+                      {AVAILABLE_MODELS_ANTHROPIC.map((model) => (
+                        <SelectItem key={model} value={model}>
+                          {model}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
                   </SelectContent>
                 </Select>
                 <FieldDescription>
-                  The HTTP method to use for the request.
+                  The Google Anthropic model to use for completion.
                 </FieldDescription>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
@@ -151,52 +153,41 @@ export const HttpRequestDialog = React.memo(({
           />
 
           <Controller
-            name="endpoint"
+            name="systemPrompt"
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Endpoint URL</FieldLabel>
-                <Input
+                <FieldLabel htmlFor={field.name}>System Prompt (Optional)</FieldLabel>
+                <Textarea
+                  className="min-h-[120px] font-mono text-sm"
+                  placeholder="You are a helpful assistant."
                   {...field}
-                  id={field.name}
-                  aria-invalid={fieldState.invalid}
-                  placeholder="https://api.example.com/users/{{httpResponse.body.id}}"
                 />
                 <FieldDescription>
-                  Statis URL or use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects.
+                  Sets the behavior of the assistant. Use {"{{variables}}"} to simple values or {"{{json variable}}"} to stringify objects.
                 </FieldDescription>
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />
 
-          {showBodyField && (
-            <Controller
-              name="body"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Request Body</FieldLabel>
-                  <Textarea
-                    {...field}
-                    className="min-h-[120px] font-mono text-sm"
-                    id={field.name}
-                    aria-invalid={fieldState.invalid}
-                    // how to space the placeholder text nicely?
-                    placeholder={`{
-  "userId": "{{httpResponse.data.id}}",
-  "name": "{{httpResponse.data.name}}",
-  "items": "{{httpResponse.data.items}}"
-}`}
-                  />
-                  <FieldDescription>
-                    JSON with template variables. Use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects.
-                  </FieldDescription>
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-          )}
+          <Controller
+            name="userPrompt"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>User Prompt</FieldLabel>  
+                <Textarea
+                  className="min-h-[120px] font-mono text-sm"
+                  placeholder="Summarize this text: {{json httpResponse.data}}"
+                  {...field}
+                />
+                <FieldDescription>
+                  Sets the behavior of the assistant. Use {"{{variables}}"} to simple values or {"{{json variable}}"} to stringify objects.
+                </FieldDescription>
+              </Field>
+            )}
+          />
+
           <DialogFooter className="pt-4">
             <Button type="submit">
               Submit

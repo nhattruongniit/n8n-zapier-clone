@@ -21,7 +21,6 @@ export const ManualTriggerNode = React.memo((props: NodeProps) => {
     refreshToken: () => getManualTriggerRealtimeToken(props.id),
   });
   
-
   function handleOpenSettings() {
     setDialogOpen(true);
   }
@@ -42,5 +41,3 @@ export const ManualTriggerNode = React.memo((props: NodeProps) => {
     </>
   )
 });
-
-ManualTriggerNode.displayName = "ManualTriggerNode";
