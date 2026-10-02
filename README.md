@@ -14,11 +14,14 @@ npm run dev
 # run background job worker
 npx inngest-cli@latest dev
 
-# run ngrok
+# run ngrok - https://dashboard.ngrok.com/
 ngrok http 3000
+
+# access neon db
+https://console.neon.tech
 ```
 
-### prisma commands reference:
+### prisma commands reference
 ```bash
 # Open Prisma Studio (database GUI)
 npx prisma studio
@@ -42,7 +45,7 @@ npx prisma migrate dev --name <migration-name>
 npx prisma migrate reset
 ```
 
-### shadcn/ui commands reference:
+### shadcn/ui commands reference
 ```bash
 # Generate all shadcn/ui components
 npx shadcn@latest add --all
@@ -51,15 +54,19 @@ npx shadcn@latest add --all
 npx shadcn@latest add <component-name>
 ```
 
-### better-auth commands reference:
+### better-auth commands reference
 ```bash
 # generate better-auth postgres adapter
 npx auth@latest generate
 ```
 
-### test stripe webhooks
+### Stripe webhooks
 ```bash
-# docs: https://stripe.com/docs/webhooks
+# docs: 
+https://stripe.com/docs/webhooks
+
+# dashboard: 
+https://dashboard.stripe.com/
 
 # login
 stripe login
@@ -71,6 +78,14 @@ stripe listen --forward-to "localhost:3000/api/webhooks/stripe?workflowId={workf
 stripe trigger payment_intent.succeeded
 ```
 
+### AI Integrations
+#### Google Generative AI
+- Model code: https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/google-models
+- AI API: https://aistudio.google.com/
+
+#### OpenAI
+- Model code: https://platform.openai.com/docs/models
+- AI API: https://platform.openai.com/
 
 ## ✨ Features
 
@@ -137,7 +152,6 @@ stripe trigger payment_intent.succeeded
 - Use: **4242 4242 4242 4242** to test Stripe payments in dev mode
 
 ### AI Providers Gemini
-
 - **Get key** - https://aistudio.google.com/
 - **gemini-3.1-pro-preview** — [https://ai-sdk.dev/providers/ai-sdk-providers/google](https://ai-sdk.dev/providers/ai-sdk-providers/google)
 
