@@ -5,6 +5,7 @@ import { NonRetriableError } from "inngest";
 import { openAiChannel } from "@/inngest/channels/openai";
 import { generateText } from "ai";
 import { FALLBACK_MODEL_OPENAI } from "@/config/constants";
+import prisma from "@/lib/db";
 
 Handlebars.registerHelper('json', context => {
   try {
@@ -17,6 +18,7 @@ Handlebars.registerHelper('json', context => {
 
 type OpenAiData = {
   variableName?: string;
+  credentialId?: string;
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
@@ -38,6 +40,11 @@ export const openAiExecutor: NodeExecutor<OpenAiData> = async ({
     throw new NonRetriableError("OpenAI node: No variable name configured");
   }
 
+  if (!data.credentialId) {
+    await step.realtime.publish("publish:openai-execution", ch.status, { status: "error" });
+    throw new NonRetriableError("OpenAI node: Credential is configured");
+  }
+
   if (!data.userPrompt) {
     await step.realtime.publish("publish:openai-execution", ch.status, { status: "error" });
     throw new NonRetriableError("OpenAI node: No user prompt configured");
@@ -51,8 +58,20 @@ export const openAiExecutor: NodeExecutor<OpenAiData> = async ({
     ? Handlebars.compile(data.userPrompt)(context)
     : "";
 
+  const credential = await step.run('get-crendetial', () => {
+    return prisma.credential.findUnique({
+      where: {
+        id: data.credentialId
+      }
+    })
+  })
+
+  if (!credential) {
+    throw new NonRetriableError("OpenAI node: Credential not found")
+  }
+  
   const openai = createOpenAI({
-    apiKey: process.env.OPENAI_API_KEY!,
+    apiKey: credential.value,
   });
 
   try {
