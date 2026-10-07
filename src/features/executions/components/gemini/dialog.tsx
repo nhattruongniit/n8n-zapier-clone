@@ -4,6 +4,7 @@ import React from "react";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
+import Image from 'next/image';
 import {
   Dialog,
   DialogContent,
@@ -31,6 +32,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { AVAILABLE_MODELS_GEMINI } from "@/config/constants";
+import { CredentialType } from "@/generated/prisma";
+import { useCredentialByType } from "@/features/credentials/hooks/use-credentials";
 
 const formSchema = z.object({
   variableName: z
@@ -40,6 +43,7 @@ const formSchema = z.object({
       message: 'Variable name must start with a letter or underscore and can only contain letters, numbers, and underscores' 
     }),
   model: z.enum(AVAILABLE_MODELS_GEMINI),
+  credentialId: z.string().min(1, 'Credential is required'),
   systemPrompt: z.string().optional(),
   userPrompt: z.string().min(1, { message: 'User prompt is required' })
 });
@@ -59,11 +63,17 @@ export const GeminiDialog = React.memo(({
   onSubmit,
   defaultValues = {},
 }: GeminiDialogProps) => {
+  const { 
+    data: credentials, 
+    isLoading: isLoadingCredentials,
+  } = useCredentialByType(CredentialType.GEMINI);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       variableName: defaultValues.variableName ?? '',
       model: defaultValues.model ?? AVAILABLE_MODELS_GEMINI[0],
+      credentialId: defaultValues.credentialId ?? '',
       systemPrompt: defaultValues.systemPrompt ?? '',
       userPrompt: defaultValues.userPrompt ?? '',
     },
@@ -74,6 +84,7 @@ export const GeminiDialog = React.memo(({
       form.reset({
         variableName: defaultValues.variableName ?? '',
         model: defaultValues.model ?? AVAILABLE_MODELS_GEMINI[0],
+        credentialId: defaultValues.credentialId ?? '',
         systemPrompt: defaultValues.systemPrompt ?? '',
         userPrompt: defaultValues.userPrompt ?? '',
       })
@@ -112,6 +123,46 @@ export const GeminiDialog = React.memo(({
                 <FieldDescription>
                   Use this name to reference the result in other nodes: {" "} {`{{${watchVariableName}.text}}`}
                 </FieldDescription>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
+          />
+
+          <Controller
+            name="credentialId"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Gemini Credential</FieldLabel>
+                <Select 
+                  {...field} 
+                  name={field.name}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  aria-invalid={fieldState.invalid}
+                  disabled={isLoadingCredentials || !credentials?.length}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue>
+                      {(value: string | null) => value ? (
+                        <>
+                          <Image src="/logo/gemini.svg" alt="Gemini" width={16} height={16} />
+                          {credentials.find(option => option.id === value)?.name}
+                        </>
+                      ) : 'Select a credential' }
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {(credentials || []).map((option) => (
+                        <SelectItem key={option.id} value={option.id}>
+                          <Image src="/logo/gemini.svg" alt="Gemini" width={16} height={16} />
+                          {option.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}

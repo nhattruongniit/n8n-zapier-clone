@@ -71,7 +71,7 @@ export const EntityHeader = ({
           disabled={disabled || isCreating}
           size="sm"
         >
-          <Link href={newButtonHref} prefetch>
+          <Link href={newButtonHref} prefetch className="flex">
             <PlusIcon className="size-4"/>
             {newButtonLabel}
           </Link>
