@@ -40,3 +40,6 @@ export const FALLBACK_MODEL_ANTHROPIC = "claude-sonnet-4-5";
 export const AVAILABLE_MODELS_ANTHROPIC = [
   "claude-sonnet-4-5"
 ];
+
+export const DISCORD_CHANNEL_NAME = "discord-execution";
+export const SLACK_CHANNEL_NAME = "slack-execution";
