@@ -29,6 +29,7 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
   nodeId,
   context,
   step,
+  userId,
 }) => {
   const ch = anthropicChannel({ contentId: nodeId });
   await step.realtime.publish("publish:anthropic-execution", ch.status, {
@@ -61,7 +62,8 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
   const credential = await step.run('get-crendetial', () => {
     return prisma.credential.findUnique({
       where: {
-        id: data.credentialId
+        id: data.credentialId,
+        userId
       }
     })
   })
