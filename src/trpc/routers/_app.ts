@@ -4,6 +4,7 @@ import prisma from "@/lib/db";
 import { baseProcedure, createTRPCRouter, protectedProcedure, premiumProcedure } from "../init";
 import { workflowsRouter } from "@/features/workflows/server/routers";
 import { credentialsRouter } from "@/features/credentials/server/routers";
+import { executionsRouter } from "@/features/executions/server/routers";
 
 export const appRouter = createTRPCRouter({
   // get list of users  with authentication
@@ -58,6 +59,7 @@ export const appRouter = createTRPCRouter({
   }),
   workflows: workflowsRouter,
   credentials: credentialsRouter,
+  executions: executionsRouter,
 });
 
 // export type definition of API
