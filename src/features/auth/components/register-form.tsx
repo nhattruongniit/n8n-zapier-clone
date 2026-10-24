@@ -40,6 +40,32 @@ export function RegisterForm() {
     },
   })
 
+  const signInGithub = async () => {
+    await authClient.signIn.social({
+      provider: "github"
+    }, {
+      onSuccess: () => {
+        router.push("/");
+      },
+      onError: (ctx) => {
+        toast.error(ctx.error?.message || "An error occurred while signing in");
+      }
+    })
+  }
+
+  const signInGoogle = async () => {
+    await authClient.signIn.social({
+      provider: "google"
+    }, {
+      onSuccess: () => {
+        router.push("/");
+      },
+      onError: (ctx) => {
+        toast.error(ctx.error?.message || "An error occurred while signing in");
+      }
+    })
+  }
+
   const onSubmit = async (values: FormValues) => {
     console.log("RegisterForm onSubmit", values);
     await authClient.signUp.email(
@@ -78,6 +104,7 @@ export function RegisterForm() {
                   variant="outline"
                   className="w-full"
                   type="button"
+                  onClick={signInGithub}
                   disabled={isPending}
                 >
                   <Image src="/logo/github.svg" alt="GitHub logo" width={20} height={20} />
@@ -87,6 +114,7 @@ export function RegisterForm() {
                   variant="outline"
                   className="w-full"
                   type="button"
+                  onClick={signInGoogle}
                   disabled={isPending}
                 >
                   <Image src="/logo/google.svg" alt="Google logo" width={20} height={20} />
