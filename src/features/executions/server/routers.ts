@@ -1,9 +1,7 @@
 import prisma from "@/lib/db";
-import { generateSlug } from "random-word-slugs";
-import { createTRPCRouter, protectedProcedure, premiumProcedure } from "@/trpc/init";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { z } from "zod";
 import { PAGINATION } from "@/config/constants";
-import { CredentialType } from "@/generated/prisma";
 
 export const executionsRouter = createTRPCRouter({
   getOne: protectedProcedure
