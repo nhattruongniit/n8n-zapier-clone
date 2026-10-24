@@ -8,10 +8,10 @@ import { FALLBACK_MODEL_GEMINI } from "@/config/constants";
 import prisma from "@/lib/db";
 import { decrypt } from "@/lib/encryption";
 
-Handlebars.registerHelper('json', context => {
+Handlebars.registerHelper("json", (context) => {
   try {
     const stringified = JSON.stringify(context, null, 2);
-    return new Handlebars.SafeString(stringified);  
+    return new Handlebars.SafeString(stringified);
   } catch (error) {
     throw new Error(`Failed to stringify JSON in Handlebars helper: ${error}`);
   }
@@ -23,7 +23,7 @@ type GeminiData = {
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
-}
+};
 
 export const geminiExecutor: NodeExecutor<GeminiData> = async ({
   data,
@@ -33,52 +33,47 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
   step,
 }) => {
   const ch = geminiChannel({ contentId: nodeId });
-  await step.realtime.publish("publish:gemini-execution", ch.status, {
+  await step.realtime.publish(`publish:${nodeId}:loading`, ch.status, {
     status: "loading",
   });
 
-  if (!data.variableName && typeof data.variableName === 'string') {
-    await step.realtime.publish("publish:gemini-execution", ch.status, { status: "error" });
-    throw new NonRetriableError("Gemini node: No variable name configured");
-  }
-
-  if (!data.credentialId) {
-    await step.realtime.publish("publish:gemini-execution", ch.status, { status: "error" });
-    throw new NonRetriableError("Gemini node: Credential is configured");
-  }
-
-  if (!data.userPrompt) {
-    await step.realtime.publish("publish:gemini-execution", ch.status, { status: "error" });
-    throw new NonRetriableError("Gemini node: No user prompt configured");
-  } 
-
-  const systemPrompt = data.systemPrompt
-    ? Handlebars.compile(data.systemPrompt)(context)
-    : "You are a helpful assistant.";
-  
-  const userPrompt = data.userPrompt
-    ? Handlebars.compile(data.userPrompt)(context)
-    : "";
-
-  const credential = await step.run('get-crendetial', () => {
-    return prisma.credential.findUnique({
-      where: {
-        id: data.credentialId,
-        userId
-      }
-    })
-  })
-
-  if (!credential) {
-    throw new NonRetriableError("Gemini node: Credential not found")
-  }
-
-  const google = createGoogleGenerativeAI({
-    apiKey: decrypt(credential.value),
-  });
-
   try {
-    await step.realtime.publish("publish:gemini-execution", ch.status, { status: "loading" });
+    if (!data.variableName) {
+      throw new NonRetriableError("Gemini node: No variable name configured");
+    }
+
+    if (!data.credentialId) {
+      throw new NonRetriableError("Gemini node: Credential is not configured");
+    }
+
+    if (!data.userPrompt) {
+      throw new NonRetriableError("Gemini node: No user prompt configured");
+    }
+
+    const systemPrompt = data.systemPrompt
+      ? Handlebars.compile(data.systemPrompt)(context)
+      : "You are a helpful assistant.";
+
+    const userPrompt = data.userPrompt
+      ? Handlebars.compile(data.userPrompt)(context)
+      : "";
+
+    const credential = await step.run("get-crendetial", () => {
+      return prisma.credential.findUnique({
+        where: {
+          id: data.credentialId,
+          userId,
+        },
+      });
+    });
+
+    if (!credential) {
+      throw new NonRetriableError("Gemini node: Credential not found");
+    }
+
+    const google = createGoogleGenerativeAI({
+      apiKey: decrypt(credential.value),
+    });
 
     const { steps } = await step.ai.wrap("gemini-generate-text", generateText, {
       model: google(data.model ?? FALLBACK_MODEL_GEMINI),
@@ -88,21 +83,26 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
         isEnabled: true,
         recordInputs: true,
         recordOutputs: true,
-      }
+      },
     });
 
-    await step.realtime.publish("publish:gemini-execution", ch.status, { status: "success" });
+    await step.realtime.publish(`publish:${nodeId}:success`, ch.status, {
+      status: "success",
+    });
 
-    const text = steps[0].content[0].type === "text" ? steps[0].content[0].text : "";
+    const text =
+      steps[0].content[0].type === "text" ? steps[0].content[0].text : "";
 
     return {
       ...context,
-      [data.variableName!]: {
-        text
-      }
-    }
+      [data.variableName]: {
+        text,
+      },
+    };
   } catch (error) {
-    await step.realtime.publish("publish:gemini-execution", ch.status, { status: "error" });
+    await step.realtime.publish(`publish:${nodeId}:error`, ch.status, {
+      status: "error",
+    });
     throw error;
   }
-}
+};

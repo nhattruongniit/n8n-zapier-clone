@@ -1,5 +1,5 @@
 import Handlebars from "handlebars";
-import { MethodType } from "@/config/constants";
+import type { MethodType } from "@/config/constants";
 import { NonRetriableError } from "inngest";
 import ky, { type Options as KyOptions } from "ky";
 
@@ -29,25 +29,25 @@ export const httpRequestExecutor: NodeExecutor<httpRequestData> = async ({
   step,
 }) => {
   const ch = httpRequestChannel({ contentId: nodeId });
-  await step.realtime.publish("publish:http-request", ch.status, {
+  await step.realtime.publish(`publish:${nodeId}:loading`, ch.status, {
     status: "loading",
   });
 
   let result: Record<string, unknown>;
   try {
     result = await step.run("http-request", async () => {
-      if (!data.variableName && typeof data.variableName === 'string') {
-        await step.realtime.publish("publish:http-request", ch.status, { status: "error" });
+      if (!data.variableName) {
+        await step.realtime.publish(`publish:${nodeId}:error`, ch.status, { status: "error" });
         throw new NonRetriableError("HTTP Request node: No variable name configured");
       }
 
       if (!data.endpoint) {
-        await step.realtime.publish("publish:http-request", ch.status, { status: "error" });
+        await step.realtime.publish(`publish:${nodeId}:error`, ch.status, { status: "error" });
         throw new NonRetriableError("HTTP Request node: No endpoint configured");
       }
 
       if (!data.method) {
-        await step.realtime.publish("publish:http-request", ch.status, { status: "error" });
+        await step.realtime.publish(`publish:${nodeId}:error`, ch.status, { status: "error" });
         throw new NonRetriableError("HTTP Request node: No method configured");
       }
 
@@ -92,10 +92,10 @@ export const httpRequestExecutor: NodeExecutor<httpRequestData> = async ({
       }
     })
 
-    await step.realtime.publish("publish:http-request", ch.status, { status: "success" });
+    await step.realtime.publish(`publish:${nodeId}:success`, ch.status, { status: "success" });
     return result;
   } catch (error) {
-    await step.realtime.publish("publish:http-request", ch.status, { status: "error" });
+    await step.realtime.publish(`publish:${nodeId}:error`, ch.status, { status: "error" });
     throw error;
   }
 }

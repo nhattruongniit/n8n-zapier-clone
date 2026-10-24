@@ -27,32 +27,31 @@ export const slackExecutor: NodeExecutor<SlackData> = async ({
   step,
 }) => {
   const ch = slackChannel({ contentId: nodeId });
-  await step.realtime.publish("publish:slack-execution", ch.status, {
+  await step.realtime.publish(`publish:${nodeId}:loading`, ch.status, {
     status: "loading",
   });
 
-  if (!data.content) {
-    await step.realtime.publish("publish:slack-execution", ch.status, { status: "error" });
-    throw new NonRetriableError("Slack node: Message content not configured");
-  }
-
-  const rawContent = Handlebars.compile(data.content)(context);
-  const content = decode(rawContent);
-
   try {
+    if (!data.content) {
+      throw new NonRetriableError("Slack node: Message content not configured");
+    }
+
+    const rawContent = Handlebars.compile(data.content)(context);
+    const content = decode(rawContent);
+
     const result = await step.run("slack-webhook", async () => {
       if (!data.webhookUrl) {
-        await step.realtime.publish("publish:slack-execution", ch.status, { status: "error" });
+        await step.realtime.publish(`publish:${nodeId}:error`, ch.status, { status: "error" });
         throw new NonRetriableError("Slack node: Webhook URL not configured");
       }      
-      await ky.post(data.webhookUrl!, {
+      await ky.post(data.webhookUrl, {
         json: {
           content: content, // the key depends on workflow config
         }
       })
 
       if (!data.variableName) {
-        await step.realtime.publish("publish:slack-execution", ch.status, { status: "error" });
+        await step.realtime.publish(`publish:${nodeId}:error`, ch.status, { status: "error" });
         throw new NonRetriableError("Slack node: No variable name configured");
       }
       
@@ -63,12 +62,12 @@ export const slackExecutor: NodeExecutor<SlackData> = async ({
         }
       }
     })
-    await step.realtime.publish("publish:slack-execution", ch.status, {
+    await step.realtime.publish(`publish:${nodeId}:success`, ch.status, {
       status: "success",
     });
     return result;
   } catch (error) {
-    await step.realtime.publish("publish:slack-execution", ch.status, { status: "error" });
+    await step.realtime.publish(`publish:${nodeId}:error`, ch.status, { status: "error" });
     throw error;
   }
 }
