@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 // import { caller } from "@/trpc/server";
 // import { requireAuth } from "@/lib/auth-utils";
 import { useTRPC } from "@/trpc/client";
-import { LogoutButton } from "./logout";
+// import { LogoutButton } from "./logout";
 
 const Page = () => {
   /* use server-side fetching with trpc with authentication
@@ -52,7 +52,7 @@ const Page = () => {
       </Button>
       <br />
       <br />
-      <LogoutButton />
+      {/* <LogoutButton /> */}
     </div>
   );
 };
